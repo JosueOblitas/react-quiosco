@@ -1,11 +1,41 @@
+import { useState } from "react";
+import { createRef } from "react"
 import { Link } from "react-router-dom"
+import clienteAxios from "../config/axios";
+import Alerta from "../components/Alerta";
+import { useAuth } from "../hooks/useAuth";
+
 const Login = () => {
+
+    const emailRef = createRef();
+    const passwordref = createRef();
+
+    const [errores,setErrores] = useState([]);
+    const {login} = useAuth({
+        middleware: 'guest',
+        url: '/'
+    });
+
+    const handleSubmit = async e => {
+        e.preventDefault();
+
+        const datos = {
+            email: emailRef.current.value,
+            password:passwordref.current.value
+        }
+        login(datos,setErrores)
+    }
+
   return (
     <>
         <h1 className='text-4xl font-black'>Iniciar Sesión</h1>
         <p>Para crear un pedido debes iniciar sesion</p>
         <div className="bg-white shadow-md rounded-md mt-10 px-5 py-10">
-            <form action="">
+            <form 
+                onSubmit={handleSubmit}
+                noValidate
+            >
+            {errores ?  errores.map((error,i) => <Alerta key={i}>{error}</Alerta> )   : null}
                 <div className="mb-4">
                     <label htmlFor="email" className='text-slate-800'>Email:</label>
                     <input 
@@ -14,6 +44,7 @@ const Login = () => {
                         name='email'
                         className='mt-2 block p-3 bg-gray-100 w-full' 
                         placeholder='Tu nombre'
+                        ref={emailRef}
                     />
                 </div>
                 <div className="mb-4">
@@ -24,6 +55,7 @@ const Login = () => {
                         name='password'
                         className='mt-2 block p-3 bg-gray-100 w-full' 
                         placeholder='Tu nombre'
+                        ref={passwordref}
                     />
                 </div>
                 <input 
@@ -34,7 +66,7 @@ const Login = () => {
             </form>
         </div>
         <nav className="mt-5">
-            <Link to="/auth/register">
+            <Link to="/auth/registro">
                 ¿No tienes cuenta? Crea una
             </Link>
         </nav>
